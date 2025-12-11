@@ -4,12 +4,32 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class LibraryProject {
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+
+public class LibraryProject extends Application {
+     @Override
+    public void start(Stage stage) {
+        Button btn = new Button("Hello JavaFX!");
+        StackPane root = new StackPane(btn);
+
+        stage.setScene(new Scene(root, 400, 300));
+        stage.setTitle("My GUI");
+        stage.show();
+    }
+
     public static void main(String[] args) {
-    File file =new File("D:\\Books.txt");
+    File file =new File("");
      String []books=readTextFile(file);
-     for (int i=0;i<books.length;i++)
-        System.out.println(books[i]);
+    
+    }
+
+    private void addToBooks(String[] books, String book) {
+        
+
     }
     private static String[] readTextFile(File file) {
         int i=0;
@@ -40,4 +60,5 @@ public class LibraryProject {
         }
         return arr;
     }
+
 }
