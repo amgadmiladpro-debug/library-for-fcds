@@ -2,6 +2,7 @@ package com.library;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javafx.application.Application;
@@ -30,6 +31,7 @@ public class LibraryProject extends Application {
         TextField searchForBook = new TextField("Search for a book");
         Button searchButton = new Button("Search");
         Label label = new Label();
+        Button saveAndExitButton = new Button("Save and Exit");
         
         stage.setScene(new Scene(root, 400, 300));
         stage.setTitle("FCDS Library Project");
@@ -48,9 +50,14 @@ public class LibraryProject extends Application {
                 file = selectedFile;
                 root.getChildren().remove(btn);
                 books = readTextFile(file);
+                for (String book : books) {
+                    System.out.println(book);
+                }
+                //System.out.println(books);
+                books=removeFromBooks(books,null);// Remove count from books array
                 fileUploaded = true;
                 // Add buttons AFTER file is uploaded
-                root.getChildren().addAll(displayAllBooks, addBooksButton, removeBooksButton, countTotalBooks, searchForBook, label);
+                root.getChildren().addAll(displayAllBooks, addBooksButton, removeBooksButton, countTotalBooks, searchForBook, label, searchButton, saveAndExitButton);
             } else {
                 System.out.println("File selection cancelled.");
             }
@@ -74,6 +81,54 @@ public class LibraryProject extends Application {
                 label.setText("Book added: " + newBook);
             });
         });
+        removeBooksButton.setOnAction(e -> {
+            TextField removeBookField = new TextField("Enter book name to remove");
+            Button confirmRemoveButton = new Button("Remove Book");
+            root.getChildren().addAll(removeBookField, confirmRemoveButton);
+            confirmRemoveButton.setOnAction(ev -> {
+                String bookToRemove = removeBookField.getText();
+                String[] updatedBooks = new String[books.length - 1];
+                int index = 0;
+                boolean found = false;
+                for (String book : books) {
+                    if (book.equals(bookToRemove) && !found) {
+                        found = true;
+                        continue;
+                    }
+                    if (index < updatedBooks.length) {
+                        updatedBooks[index++] = book;
+                    }
+                }
+                if (found) {
+                    books = updatedBooks;
+                    label.setText("Book removed: " + bookToRemove);
+                } else {
+                    label.setText("Book not found: " + bookToRemove);
+                }
+                root.getChildren().removeAll(removeBookField, confirmRemoveButton);
+            });
+        });
+        countTotalBooks.setOnAction(e -> {
+            label.setText("Total books: " + (books.length - 1));
+        });
+        searchButton.setOnAction(e -> {
+            String searchQuery = searchForBook.getText().toLowerCase();
+            String foundBooks = "";
+            for (String book : books) {
+                if (book.toLowerCase().contains(searchQuery)) {
+                    foundBooks += book + "\n";
+                }
+            }
+            if (foundBooks.isEmpty()) {
+                label.setText("No books found for: " + searchQuery);
+            } else {
+                label.setText("Books found:\n" + foundBooks);
+            }
+        });
+        saveAndExitButton.setOnAction(e -> {
+            saveAndExit(file, books);
+            stage.close();
+        });
     }
 
     public static void main(String[] args) {
@@ -91,7 +146,14 @@ public class LibraryProject extends Application {
     newBooks[books.length]=book;
     return newBooks;
     }
-
+    private String[] removeFromBooks(String[] books, String book) {
+    String[] newBooks=new String[books.length-1];
+    for (int i=0;i<newBooks.length;i++){
+        
+        newBooks[i]=books[i];
+    }
+    return newBooks;
+    }
 
 
     private static String[] readTextFile(File file) {
@@ -123,5 +185,13 @@ public class LibraryProject extends Application {
         }
         return arr;
     }
-
+    public void saveAndExit(File file,String[] books){ 
+        try {
+            FileWriter writer = new FileWriter(file);
+            writer.write(String.join("\n", books));
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
