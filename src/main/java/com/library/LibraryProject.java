@@ -6,10 +6,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -21,18 +24,30 @@ public class LibraryProject extends Application {
      @Override
     public void start(Stage stage) {
         Button btn = new Button("Upload books");
-        VBox root = new VBox();
+        VBox root = new VBox(10);
+        root.setPadding(new Insets(15));
+        root.setAlignment(Pos.TOP_CENTER);
         root.getChildren().add(btn);
         
         Button displayAllBooks = new Button("Display all books");
         Button addBooksButton = new Button("Add a new book");
         Button removeBooksButton = new Button("Remove a book");
         Button countTotalBooks = new Button("Click to count the books");
-        TextField searchForBook = new TextField("Search for a book");
+        TextField searchForBook = new TextField();
+        searchForBook.setPromptText("Search for a book");
         Button searchButton = new Button("Search");
         Label label = new Label();
         Button saveAndExitButton = new Button("Save and Exit");
-        
+        HBox searchBox = new HBox(10, searchForBook, searchButton);
+        searchBox.setAlignment(Pos.CENTER);
+        HBox actionButtons = new HBox(10,
+            displayAllBooks,
+            addBooksButton,
+            removeBooksButton
+        );
+actionButtons.setAlignment(Pos.CENTER);
+
+
         stage.setScene(new Scene(root, 400, 300));
         stage.setTitle("FCDS Library Project");
         stage.show();
@@ -57,7 +72,7 @@ public class LibraryProject extends Application {
                 books=removeFromBooks(books,null);// Remove count from books array
                 fileUploaded = true;
                 // Add buttons AFTER file is uploaded
-                root.getChildren().addAll(displayAllBooks, addBooksButton, removeBooksButton, countTotalBooks, searchForBook, label, searchButton, saveAndExitButton);
+                root.getChildren().addAll(actionButtons, searchBox, countTotalBooks, saveAndExitButton,label);
             } else {
                 System.out.println("File selection cancelled.");
             }
@@ -129,6 +144,13 @@ public class LibraryProject extends Application {
             saveAndExit(file, books);
             stage.close();
         });
+        root.setStyle("""
+    -fx-background-color: #f4f4f4;
+""");
+
+btn.setStyle("-fx-font-size: 14px; -fx-background-color: #2196F3; -fx-text-fill: white;");
+saveAndExitButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+
     }
 
     public static void main(String[] args) {
